@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "betel-nut-mod:block/betel_palm_leaves"
+  }
+}

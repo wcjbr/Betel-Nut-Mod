@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "betel-nut-mod:betel_palm_log",
+    "betel-nut-mod:betel_palm_planks",
+    "betel-nut-mod:betel_palm_stairs",
+    "betel-nut-mod:betel_palm_slab",
+    "betel-nut-mod:betel_palm_fence",
+    "betel-nut-mod:betel_palm_fence_gate",
+    "betel-nut-mod:betel_palm_button",
+    "betel-nut-mod:betel_palm_pressure_plate"
+  ]
+}

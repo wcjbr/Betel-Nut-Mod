@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "betel-nut-mod:raw_betel_nut"
+    },
+    "title": {
+      "translate": "advancement.betel-nut-mod.root.title"
+    },
+    "description": {
+      "translate": "advancement.betel-nut-mod.root.description"
+    },
+    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "has_raw_betel_nut": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "betel-nut-mod:raw_betel_nut"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_raw_betel_nut"
+    ]
+  ]
+}

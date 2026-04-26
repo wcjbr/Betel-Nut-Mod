@@ -1,0 +1,51 @@
+{
+	"schemaVersion": 1,
+	"id": "betel-nut-mod",
+	"version": "${version}",
+	"name": "Betel Nut Mod",
+	"description": "A basic Fabric betel nut mod with flavored foods, recipes, advancements, and a player addiction component.",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"custom": {
+		"cardinal-components": [
+			"betel-nut-mod:addiction"
+		]
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/betel-nut-mod/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"betel.nut.BetelNutMod"
+		],
+		"cardinal-components-entity": [
+			"betel.nut.component.BetelNutEntityComponents"
+		],
+		"client": [
+			"betel.nut.client.BetelNutModClient"
+		],
+		"fabric-datagen": [
+			"betel.nut.client.BetelNutModDataGenerator"
+		]
+	},
+	"mixins": [
+		"betel-nut-mod.mixins.json",
+		{
+			"config": "betel-nut-mod.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.2",
+		"minecraft": "1.21.1",
+		"java": ">=21",
+		"fabric-api": ">=0.116.11+1.21.1 <0.117.0",
+		"cardinal-components-base": ">=6.1.3 <7.0.0",
+		"cardinal-components-entity": ">=6.1.3 <7.0.0"
+	}
+}
