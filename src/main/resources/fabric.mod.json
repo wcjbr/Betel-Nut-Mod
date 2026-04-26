@@ -1,22 +1,22 @@
 {
 	"schemaVersion": 1,
 	"id": "betel-nut-mod",
-	"version": "${version}",
+	"version": "1.0.0",
 	"name": "Betel Nut Mod",
-	"description": "A basic Fabric betel nut mod with flavored foods, recipes, advancements, and a player addiction component.",
+	"description": "用⑩代码写起来的模组",
 	"authors": [
-		"Me!"
+		"寿云"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://space.bilibili.com/1832031043?spm_id_from=333.1007.0.0",
+		"sources": "https://github.com/ikunkk02-afk/Betel-Nut-Mod"
 	},
 	"custom": {
 		"cardinal-components": [
 			"betel-nut-mod:addiction"
 		]
 	},
-	"license": "CC0-1.0",
+	"license": "MIT License",
 	"icon": "assets/betel-nut-mod/icon.png",
 	"environment": "*",
 	"entrypoints": {

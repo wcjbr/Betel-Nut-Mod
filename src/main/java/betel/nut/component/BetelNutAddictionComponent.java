@@ -30,6 +30,7 @@ public class BetelNutAddictionComponent implements CopyableComponent<BetelNutAdd
 	private long cleanTime;
 	private int notifiedWithdrawalStage;
 	private long nextFeedbackTime;
+	private long nextEatingRestrictionMessageTime;
 	private long respawnWithdrawalCheckTime = -1;
 	private boolean showRespawnWithdrawalMessage;
 
@@ -309,6 +310,22 @@ public class BetelNutAddictionComponent implements CopyableComponent<BetelNutAdd
 
 	public void clearWithdrawalMaxHealthPenalty(ServerPlayer player) {
 		removeWithdrawalMaxHealthPenalty(player);
+	}
+
+	public void sendEatingRestrictionMessage(ServerPlayer player, String message) {
+		BetelNutConfig config = BetelNutConfig.get();
+		if (!config.showEatingRestrictionMessage) {
+			return;
+		}
+
+		long gameTime = player.level().getGameTime();
+		if (gameTime < this.nextEatingRestrictionMessageTime) {
+			return;
+		}
+
+		if (BetelMessages.send(player, message)) {
+			this.nextEatingRestrictionMessageTime = gameTime + config.eatingRestrictionMessageCooldownTicks;
+		}
 	}
 
 	private void updateWithdrawalValue(long gameTime, BetelNutConfig config) {

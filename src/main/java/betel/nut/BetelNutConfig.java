@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class BetelNutConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final String CONFIG_FILE_NAME = "betel_nut.json";
-	private static final int CONFIG_VERSION = 4;
+	private static final int CONFIG_VERSION = 5;
 	private static BetelNutConfig INSTANCE = new BetelNutConfig();
 
 	public static final int ROASTED_ADDICTION = 5;
@@ -57,6 +57,13 @@ public final class BetelNutConfig {
 	public double minimumMaxHealthAfterPenalty = 6.0D;
 	public int stage1EffectAmplifierOffset = 1;
 	public boolean enableStage4BlindnessOrDarkness = false;
+	public boolean enableWithdrawalEatingRestriction = true;
+	public int stage2EatingRestrictionWithdrawalValue = 50;
+	public int stage3EatingRestrictionWithdrawalValue = 75;
+	public boolean allowGoldenAppleInStage2 = true;
+	public boolean allowMilkInStage2 = true;
+	public boolean showEatingRestrictionMessage = true;
+	public int eatingRestrictionMessageCooldownTicks = 60;
 
 	public boolean enableBetelPalmWorldGeneration = true;
 	public boolean betelPalmGenerateInJungle = true;
@@ -152,6 +159,17 @@ public final class BetelNutConfig {
 		this.stage4MaxHealthPenalty = atLeast(this.stage4MaxHealthPenalty, 0.0D);
 		this.minimumMaxHealthAfterPenalty = atLeast(this.minimumMaxHealthAfterPenalty, 1.0D);
 		this.stage1EffectAmplifierOffset = atLeast(this.stage1EffectAmplifierOffset, 0);
+		if (this.stage2EatingRestrictionWithdrawalValue <= 0) {
+			this.stage2EatingRestrictionWithdrawalValue = 50;
+		}
+		if (this.stage3EatingRestrictionWithdrawalValue <= 0) {
+			this.stage3EatingRestrictionWithdrawalValue = 75;
+		}
+		this.stage2EatingRestrictionWithdrawalValue = clamp(this.stage2EatingRestrictionWithdrawalValue, 1,
+				this.maxWithdrawalValue);
+		this.stage3EatingRestrictionWithdrawalValue = clamp(this.stage3EatingRestrictionWithdrawalValue,
+				this.stage2EatingRestrictionWithdrawalValue, this.maxWithdrawalValue);
+		this.eatingRestrictionMessageCooldownTicks = atLeast(this.eatingRestrictionMessageCooldownTicks, 0);
 		this.betelPalmSpawnChance = clamp(this.betelPalmSpawnChance, 0.0D, 1.0D);
 		this.betelPalmTreesPerChunk = clamp(this.betelPalmTreesPerChunk, 1, 8);
 		this.betelPalmMinHeight = atLeast(this.betelPalmMinHeight, 1);
@@ -179,6 +197,15 @@ public final class BetelNutConfig {
 		}
 		if (this.baseWithdrawalIncrease == 1) {
 			this.baseWithdrawalIncrease = 4;
+		}
+		if (this.configVersion < 5) {
+			this.enableWithdrawalEatingRestriction = true;
+			this.stage2EatingRestrictionWithdrawalValue = 50;
+			this.stage3EatingRestrictionWithdrawalValue = 75;
+			this.allowGoldenAppleInStage2 = true;
+			this.allowMilkInStage2 = true;
+			this.showEatingRestrictionMessage = true;
+			this.eatingRestrictionMessageCooldownTicks = 60;
 		}
 	}
 

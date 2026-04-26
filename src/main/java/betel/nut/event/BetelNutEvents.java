@@ -12,6 +12,8 @@ import net.minecraft.world.item.Items;
 
 public final class BetelNutEvents {
 	public static void register() {
+		WithdrawalEatingRestrictions.register();
+
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			BetelNutConfig config = BetelNutConfig.get();
 			if (!config.enableAddictionSystem) {

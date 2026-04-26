@@ -11,6 +11,9 @@ public final class BetelMessages {
 	public static final String ENCHANTED_GOLDEN_APPLE_RECOVERY = "\u4f60\u7684\u8eab\u4f53\u4f3c\u4e4e\u88ab\u5f3a\u884c\u51c0\u5316\u4e86\u3002";
 	public static final String WITHDRAWAL_CONTINUES_AFTER_DEATH = "\u6b7b\u4ea1\u5e76\u6ca1\u6709\u6446\u8131\u4f60\u7684\u4f9d\u8d56\u3002";
 	public static final String WITHDRAWAL_BODY_RECOVERING = "\u4f60\u7684\u8eab\u4f53\u72b6\u6001\u5f00\u59cb\u6062\u590d\u3002";
+	public static final String EATING_RESTRICTION_STAGE2 = "\u4f60\u7684\u5634\u90e8\u50f5\u786c\uff0c\u5df2\u7ecf\u5f88\u96be\u5403\u4e0b\u666e\u901a\u98df\u7269\u3002";
+	public static final String EATING_RESTRICTION_STAGE3 = "\u4e25\u91cd\u6212\u65ad\u8ba9\u4f60\u51e0\u4e4e\u65e0\u6cd5\u8fdb\u98df\uff0c\u53ea\u6709\u9644\u9b54\u91d1\u82f9\u679c\u8fd8\u80fd\u8d77\u6548\u3002";
+	public static final String EATING_RESTRICTION_STAGE4 = "\u4f60\u7684\u8eab\u4f53\u5df2\u7ecf\u65e0\u6cd5\u63a5\u53d7\u666e\u901a\u98df\u7269\u3002";
 
 	public static boolean send(ServerPlayer player, String message) {
 		BetelNutConfig config = BetelNutConfig.get();
