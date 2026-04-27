@@ -12,7 +12,13 @@
       "item": "minecraft:paper"
     },
     {
+      "item": "minecraft:honey_bottle"
+    },
+    {
       "item": "minecraft:crafting_table"
+    },
+    {
+      "item": "minecraft:map"
     }
   ],
   "result": {
