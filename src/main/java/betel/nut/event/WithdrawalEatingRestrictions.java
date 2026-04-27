@@ -1,28 +1,29 @@
 package betel.nut.event;
 
 import betel.nut.BetelNutConfig;
+import betel.nut.BetelNutMod;
 import betel.nut.component.BetelNutAddictionComponent;
 import betel.nut.component.BetelNutEntityComponents;
 import betel.nut.item.ModItemTags;
 import betel.nut.message.BetelMessages;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 public final class WithdrawalEatingRestrictions {
 	public enum RestrictionLevel {
-		NONE("\u65e0\u9650\u5236", ""),
-		SOFT_FOODS("\u4ec5\u8f6f\u98df", BetelMessages.EATING_RESTRICTION_STAGE2),
-		ENCHANTED_GOLDEN_APPLE_ONLY("\u4ec5\u9644\u9b54\u91d1\u82f9\u679c",
+		NONE("none", ""),
+		SOFT_FOODS("soft_food_only", BetelMessages.EATING_RESTRICTION_STAGE2),
+		ENCHANTED_GOLDEN_APPLE_ONLY("enchanted_golden_apple_only",
 				BetelMessages.EATING_RESTRICTION_STAGE3),
-		BODY_REJECTS_FOOD("\u4ec5\u9644\u9b54\u91d1\u82f9\u679c", BetelMessages.EATING_RESTRICTION_STAGE4);
+		BODY_REJECTS_FOOD("enchanted_golden_apple_only", BetelMessages.EATING_RESTRICTION_STAGE4);
 
 		private final String label;
 		private final String blockMessage;
@@ -41,8 +42,25 @@ public final class WithdrawalEatingRestrictions {
 		}
 	}
 
+	public record EatingRestrictionCheck(
+			RestrictionLevel restrictionLevel,
+			boolean food,
+			boolean checkedItem,
+			boolean allowed,
+			String matchedAllowedTags,
+			String reason) {
+	}
+
+	private static boolean registered;
+
 	public static void register() {
+		if (registered) {
+			return;
+		}
+
 		UseItemCallback.EVENT.register(WithdrawalEatingRestrictions::onUseItem);
+		registered = true;
+		BetelNutMod.LOGGER.info("Withdrawal eating restriction handler registered.");
 	}
 
 	public static boolean isFeatureEnabled(BetelNutConfig config) {
@@ -76,18 +94,53 @@ public final class WithdrawalEatingRestrictions {
 
 	public static boolean isCheckedItem(ItemStack stack) {
 		return !stack.isEmpty()
-				&& (stack.has(DataComponents.FOOD)
+				&& (isFoodItem(stack)
 						|| stack.is(Items.MILK_BUCKET)
 						|| stack.is(ModItemTags.WITHDRAWAL_STAGE2_ALLOWED_FOODS)
 						|| stack.is(ModItemTags.WITHDRAWAL_STAGE3_ALLOWED_FOODS));
 	}
 
-	public static boolean canUseAtCurrentRestriction(ServerPlayer player,
+	public static boolean isFoodItem(ItemStack stack) {
+		return !stack.isEmpty() && stack.has(DataComponents.FOOD);
+	}
+
+	public static EatingRestrictionCheck evaluate(ServerPlayer player,
 			BetelNutAddictionComponent addiction, ItemStack stack) {
 		RestrictionLevel level = getRestrictionLevel(player, addiction);
-		return level == RestrictionLevel.NONE
-				|| !isCheckedItem(stack)
+		boolean checkedItem = isCheckedItem(stack);
+		boolean allowed = level == RestrictionLevel.NONE
+				|| !checkedItem
 				|| isAllowedAtLevel(stack, level, BetelNutConfig.get());
+		return new EatingRestrictionCheck(level, isFoodItem(stack), checkedItem, allowed,
+				matchedAllowedTags(stack), reason(player, addiction, stack, level, checkedItem, allowed));
+	}
+
+	public static boolean canUseAtCurrentRestriction(ServerPlayer player,
+			BetelNutAddictionComponent addiction, ItemStack stack) {
+		return evaluate(player, addiction, stack).allowed();
+	}
+
+	public static boolean shouldBlockUse(ServerPlayer player, ItemStack stack, boolean notify) {
+		if (stack.isEmpty()) {
+			return false;
+		}
+
+		BetelNutAddictionComponent addiction = BetelNutEntityComponents.ADDICTION.get(player);
+		EatingRestrictionCheck check = evaluate(player, addiction, stack);
+		if (check.allowed()) {
+			return false;
+		}
+
+		if (notify) {
+			addiction.sendEatingRestrictionMessage(player, check.restrictionLevel().blockMessage());
+		}
+
+		BetelNutMod.LOGGER.debug(
+				"Blocked withdrawal eating for {}: item={}, withdrawal={}, restrictionLevel={}, matchedTags={}, reason={}",
+				player.getScoreboardName(), BuiltInRegistries.ITEM.getKey(stack.getItem()),
+				addiction.getWithdrawalValue(), check.restrictionLevel().label(),
+				check.matchedAllowedTags(), check.reason());
+		return true;
 	}
 
 	private static InteractionResultHolder<ItemStack> onUseItem(Player player, Level level, InteractionHand hand) {
@@ -96,33 +149,9 @@ public final class WithdrawalEatingRestrictions {
 			return InteractionResultHolder.pass(stack);
 		}
 
-		BetelNutAddictionComponent addiction = BetelNutEntityComponents.ADDICTION.get(serverPlayer);
-		RestrictionLevel restrictionLevel = getRestrictionLevel(serverPlayer, addiction);
-		if (restrictionLevel == RestrictionLevel.NONE || !isCheckedItem(stack)) {
-			return InteractionResultHolder.pass(stack);
-		}
-
-		if (!canCurrentlyConsume(serverPlayer, stack)) {
-			return InteractionResultHolder.pass(stack);
-		}
-
-		if (isAllowedAtLevel(stack, restrictionLevel, BetelNutConfig.get())) {
-			return InteractionResultHolder.pass(stack);
-		}
-
-		addiction.sendEatingRestrictionMessage(serverPlayer, restrictionLevel.blockMessage());
-		return InteractionResultHolder.fail(stack);
-	}
-
-	private static boolean canCurrentlyConsume(ServerPlayer player, ItemStack stack) {
-		if (stack.is(Items.MILK_BUCKET)
-				|| stack.is(ModItemTags.WITHDRAWAL_STAGE2_ALLOWED_FOODS)
-				|| stack.is(ModItemTags.WITHDRAWAL_STAGE3_ALLOWED_FOODS)) {
-			return true;
-		}
-
-		FoodProperties food = stack.get(DataComponents.FOOD);
-		return food != null && player.canEat(food.canAlwaysEat());
+		return shouldBlockUse(serverPlayer, stack, true)
+				? InteractionResultHolder.fail(stack)
+				: InteractionResultHolder.pass(stack);
 	}
 
 	private static boolean isAllowedAtLevel(ItemStack stack, RestrictionLevel level, BetelNutConfig config) {
@@ -150,6 +179,59 @@ public final class WithdrawalEatingRestrictions {
 		}
 		return stack.is(Items.ENCHANTED_GOLDEN_APPLE)
 				|| stack.is(ModItemTags.WITHDRAWAL_STAGE3_ALLOWED_FOODS);
+	}
+
+	private static String matchedAllowedTags(ItemStack stack) {
+		boolean stage2 = stack.is(ModItemTags.WITHDRAWAL_STAGE2_ALLOWED_FOODS);
+		boolean stage3 = stack.is(ModItemTags.WITHDRAWAL_STAGE3_ALLOWED_FOODS);
+		if (stage2 && stage3) {
+			return "withdrawal_stage2_allowed_foods,withdrawal_stage3_allowed_foods";
+		}
+		if (stage2) {
+			return "withdrawal_stage2_allowed_foods";
+		}
+		if (stage3) {
+			return "withdrawal_stage3_allowed_foods";
+		}
+		return "none";
+	}
+
+	private static String reason(ServerPlayer player, BetelNutAddictionComponent addiction, ItemStack stack,
+			RestrictionLevel level, boolean checkedItem, boolean allowed) {
+		BetelNutConfig config = BetelNutConfig.get();
+		if (stack.isEmpty()) {
+			return "empty_hand";
+		}
+		if (!isFeatureEnabled(config)) {
+			return "feature_disabled";
+		}
+		if (player.isCreative() || player.isSpectator()) {
+			return "creative_or_spectator";
+		}
+		if (addiction.getCleanTime() > player.level().getGameTime()) {
+			return "clean_time_protection";
+		}
+		if (!checkedItem) {
+			return "not_food_or_recovery_drink";
+		}
+		if (level == RestrictionLevel.NONE) {
+			return "withdrawal_below_eating_restriction_threshold";
+		}
+		if (allowed) {
+			if (stack.is(Items.ENCHANTED_GOLDEN_APPLE)) {
+				return "allowed_enchanted_golden_apple";
+			}
+			if (stack.is(Items.MILK_BUCKET)) {
+				return "allowed_milk_stage2";
+			}
+			return "allowed_by_" + matchedAllowedTags(stack);
+		}
+		return switch (level) {
+			case SOFT_FOODS -> "blocked_soft_food_only";
+			case ENCHANTED_GOLDEN_APPLE_ONLY -> "blocked_enchanted_golden_apple_only";
+			case BODY_REJECTS_FOOD -> "blocked_body_rejects_food";
+			case NONE -> "allowed";
+		};
 	}
 
 	private WithdrawalEatingRestrictions() {

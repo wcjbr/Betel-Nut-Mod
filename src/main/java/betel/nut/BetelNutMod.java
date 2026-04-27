@@ -1,6 +1,7 @@
 package betel.nut;
 
 import betel.nut.event.BetelNutEvents;
+import betel.nut.event.WithdrawalEatingRestrictions;
 import betel.nut.block.ModBlocks;
 import betel.nut.command.BetelCommands;
 import betel.nut.item.ModItemGroups;
@@ -31,6 +32,7 @@ public class BetelNutMod implements ModInitializer {
 		ModBlocks.register();
 		ModItems.register();
 		ModItemGroups.register();
+		WithdrawalEatingRestrictions.register();
 		BetelNutEvents.register();
 		ModWorldGeneration.register();
 		ModVillagerTrades.registerTrades();

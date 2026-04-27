@@ -8,7 +8,7 @@ import betel.nut.BetelNutMod;
 import betel.nut.component.BetelNutAddictionComponent;
 import betel.nut.component.BetelNutEntityComponents;
 import betel.nut.event.WithdrawalEatingRestrictions;
-import betel.nut.event.WithdrawalEatingRestrictions.RestrictionLevel;
+import betel.nut.event.WithdrawalEatingRestrictions.EatingRestrictionCheck;
 import betel.nut.item.EnderBetelTeleportHandler;
 import betel.nut.worldgen.BetelPalmTreeGenerator;
 import com.mojang.brigadier.Command;
@@ -72,8 +72,10 @@ public final class BetelCommands {
 				cleanRemainingTicks);
 		double maxHealthPenalty = addiction.getCurrentMaxHealthPenalty(player);
 		boolean hasMaxHealthPenalty = addiction.hasWithdrawalMaxHealthPenalty(player);
-		RestrictionLevel eatingRestrictionLevel = WithdrawalEatingRestrictions.getRestrictionLevel(player, addiction);
+		ItemStack mainHandStack = player.getMainHandItem();
+		EatingRestrictionCheck eatingCheck = WithdrawalEatingRestrictions.evaluate(player, addiction, mainHandStack);
 		boolean eatingRestrictionEnabled = WithdrawalEatingRestrictions.isFeatureEnabled(config);
+		String mainHandName = mainHandStack.isEmpty() ? "empty" : mainHandStack.getHoverName().getString();
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"\u69df\u6994\u6210\u763e\u72b6\u6001\uff1a\u6210\u763e\u503c " + addiction.getAddictionValue()
@@ -88,7 +90,12 @@ public final class BetelCommands {
 						+ "\uff0c\u6e05\u9192\u4fdd\u62a4\u5269\u4f59 " + cleanRemainingTicks + " tick"
 						+ "\uff0c\u8fdb\u98df\u9650\u5236\u542f\u7528 " + eatingRestrictionEnabled
 						+ "\uff0c\u5f53\u524d\u8fdb\u98df\u9650\u5236\u7b49\u7ea7 "
-						+ eatingRestrictionLevel.label() + "\u3002"),
+						+ eatingCheck.restrictionLevel().label()
+						+ "\uff0c\u4e3b\u624b\u7269\u54c1 " + mainHandName
+						+ "\uff0c\u662f\u5426\u98df\u7269 " + eatingCheck.food()
+						+ "\uff0c\u662f\u5426\u53ef\u98df\u7528 " + eatingCheck.allowed()
+						+ "\uff0c\u547d\u4e2d\u5141\u8bb8\u6807\u7b7e " + eatingCheck.matchedAllowedTags()
+						+ "\uff0c\u5224\u5b9a\u539f\u56e0 " + eatingCheck.reason() + "\u3002"),
 				false);
 		return Command.SINGLE_SUCCESS;
 	}
@@ -247,20 +254,26 @@ public final class BetelCommands {
 		ServerPlayer player = context.getSource().getPlayerOrException();
 		BetelNutAddictionComponent addiction = BetelNutEntityComponents.ADDICTION.get(player);
 		ItemStack stack = player.getMainHandItem();
-		RestrictionLevel level = WithdrawalEatingRestrictions.getRestrictionLevel(player, addiction);
-		boolean checkedItem = WithdrawalEatingRestrictions.isCheckedItem(stack);
-		boolean canUse = WithdrawalEatingRestrictions.canUseAtCurrentRestriction(player, addiction, stack);
+		EatingRestrictionCheck check = WithdrawalEatingRestrictions.evaluate(player, addiction, stack);
 		String itemName = stack.isEmpty() ? "empty" : stack.getHoverName().getString();
-		String result = canUse ? "\u53ef\u4ee5" : "\u4e0d\u80fd";
-		String scope = checkedItem
+		String result = check.allowed() ? "\u53ef\u4ee5" : "\u4e0d\u80fd";
+		String scope = check.checkedItem()
 				? "\u4f1a\u8fdb\u5165\u8fdb\u98df\u9650\u5236\u68c0\u67e5"
 				: "\u4e0d\u662f\u98df\u7269\u6216\u6cbb\u7597\u996e\u54c1\uff0c\u4e0d\u4f1a\u88ab\u8fdb\u98df\u9650\u5236\u62e6\u622a";
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"\u8fdb\u98df\u6d4b\u8bd5\uff1a\u5f53\u524d\u624b\u6301\u7269\u54c1 " + itemName
+						+ "\uff0c\u6210\u763e\u503c " + addiction.getAddictionValue()
+						+ "\uff0c\u6212\u65ad\u503c " + addiction.getWithdrawalValue()
 						+ "\uff0c\u6212\u65ad\u9636\u6bb5 " + addiction.getWithdrawalStage()
-						+ "\uff0c\u8fdb\u98df\u9650\u5236\u7b49\u7ea7 " + level.label()
+						+ "\uff0c\u8fdb\u98df\u9650\u5236\u542f\u7528 "
+						+ WithdrawalEatingRestrictions.isFeatureEnabled(BetelNutConfig.get())
+						+ "\uff0c\u8fdb\u98df\u9650\u5236\u7b49\u7ea7 "
+						+ check.restrictionLevel().label()
+						+ "\uff0c\u662f\u5426\u98df\u7269 " + check.food()
 						+ "\uff0c" + scope
+						+ "\uff0c\u547d\u4e2d\u5141\u8bb8\u6807\u7b7e " + check.matchedAllowedTags()
+						+ "\uff0c\u5224\u5b9a\u539f\u56e0 " + check.reason()
 						+ "\uff0c\u5f53\u524d\u9636\u6bb5" + result + "\u4f7f\u7528\u3002"),
 				false);
 		return Command.SINGLE_SUCCESS;
