@@ -1,0 +1,39 @@
+{
+  "parent": "betel-nut-mod:root",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "betel-nut-mod:underground_betel"
+    },
+    "title": {
+      "translate": "advancement.betel-nut-mod.underground_betel.title"
+    },
+    "description": {
+      "translate": "advancement.betel-nut-mod.underground_betel.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "rewards": {
+    "experience": 100
+  },
+  "criteria": {
+    "has_underground_betel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "betel-nut-mod:underground_betel"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_underground_betel"
+    ]
+  ]
+}

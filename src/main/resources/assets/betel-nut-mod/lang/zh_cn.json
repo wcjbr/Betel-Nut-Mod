@@ -7,7 +7,17 @@
   "item.betel-nut-mod.refreshing_betel_nut": "清凉槟榔",
   "item.betel-nut-mod.night_betel_nut": "夜行槟榔",
   "item.betel-nut-mod.energizing_betel_nut": "提神槟榔",
+  "item.betel-nut-mod.honey_betel_nut": "蜂蜜槟榔",
+  "item.betel-nut-mod.glow_betel_nut": "荧光槟榔",
+  "item.betel-nut-mod.phantom_betel_nut": "幻翼槟榔",
+  "item.betel-nut-mod.ender_betel_nut": "末影槟榔",
+  "item.betel-nut-mod.lapis_betel_nut": "青金石槟榔",
+  "item.betel-nut-mod.quartz_betel_nut": "石英槟榔",
+  "item.betel-nut-mod.magma_betel_nut": "岩浆槟榔",
+  "item.betel-nut-mod.amethyst_betel_nut": "紫水晶槟榔",
   "item.betel-nut-mod.synthetic_world_betel": "合成天下槟榔",
+  "item.betel-nut-mod.rich_world_betel": "琳琅天下槟榔",
+  "item.betel-nut-mod.underground_betel": "槟榔地下槟榔",
   "block.betel-nut-mod.betel_palm_log": "槟榔树干",
   "block.betel-nut-mod.betel_palm_planks": "槟榔木板",
   "block.betel-nut-mod.betel_palm_stairs": "槟榔木楼梯",
@@ -22,5 +32,9 @@
   "advancement.betel-nut-mod.root.title": "槟榔工艺",
   "advancement.betel-nut-mod.root.description": "获得第一颗生槟榔。",
   "advancement.betel-nut-mod.synthetic_world.title": "合成天下",
-  "advancement.betel-nut-mod.synthetic_world.description": "天下万物，皆可合成。"
+  "advancement.betel-nut-mod.synthetic_world.description": "天下万物，皆可合成。",
+  "advancement.betel-nut-mod.rich_world_betel.title": "琳琅天下",
+  "advancement.betel-nut-mod.rich_world_betel.description": "花样越多，依赖越深。",
+  "advancement.betel-nut-mod.underground_betel.title": "槟榔地下",
+  "advancement.betel-nut-mod.underground_betel.description": "你把这种味道带进了更深的地方。"
 }

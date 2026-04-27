@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class BetelNutConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final String CONFIG_FILE_NAME = "betel_nut.json";
-	private static final int CONFIG_VERSION = 5;
+	private static final int CONFIG_VERSION = 6;
 	private static BetelNutConfig INSTANCE = new BetelNutConfig();
 
 	public static final int ROASTED_ADDICTION = 5;
@@ -25,7 +25,17 @@ public final class BetelNutConfig {
 	public static final int REFRESHING_ADDICTION = 10;
 	public static final int NIGHT_ADDICTION = 10;
 	public static final int ENERGIZING_ADDICTION = 20;
+	public static final int HONEY_ADDICTION = 10;
+	public static final int GLOW_ADDICTION = 10;
+	public static final int PHANTOM_ADDICTION = 14;
+	public static final int ENDER_ADDICTION = 25;
+	public static final int LAPIS_ADDICTION = 8;
+	public static final int QUARTZ_ADDICTION = 12;
+	public static final int MAGMA_ADDICTION = 18;
+	public static final int AMETHYST_ADDICTION = 9;
 	public static final int SYNTHETIC_WORLD_ADDICTION = 45;
+	public static final int RICH_WORLD_ADDICTION = 35;
+	public static final int UNDERGROUND_ADDICTION = 30;
 
 	public int configVersion = 0;
 	public boolean enableAddictionSystem = true;
@@ -73,6 +83,15 @@ public final class BetelNutConfig {
 	public int betelPalmTreesPerChunk = 1;
 	public int betelPalmMinHeight = 5;
 	public int betelPalmMaxHeight = 8;
+
+	public boolean enableEnderBetelTeleport = true;
+	public int enderBetelTeleportRadiusMin = 8;
+	public int enderBetelTeleportRadiusMax = 32;
+	public int enderBetelTeleportMaxAttempts = 32;
+	public boolean enderBetelTeleportPlaySound = true;
+	public boolean enderBetelTeleportParticles = true;
+	public boolean enderBetelTeleportDamage = false;
+	public double enderBetelTeleportDamageAmount = 2.0D;
 
 	public boolean enableFarmerTrades = true;
 	public int farmerTradeRawBetelBuyCount = 4;
@@ -174,6 +193,11 @@ public final class BetelNutConfig {
 		this.betelPalmTreesPerChunk = clamp(this.betelPalmTreesPerChunk, 1, 8);
 		this.betelPalmMinHeight = atLeast(this.betelPalmMinHeight, 1);
 		this.betelPalmMaxHeight = atLeast(this.betelPalmMaxHeight, this.betelPalmMinHeight);
+		this.enderBetelTeleportRadiusMin = atLeast(this.enderBetelTeleportRadiusMin, 1);
+		this.enderBetelTeleportRadiusMax = atLeast(this.enderBetelTeleportRadiusMax,
+				this.enderBetelTeleportRadiusMin);
+		this.enderBetelTeleportMaxAttempts = atLeast(this.enderBetelTeleportMaxAttempts, 1);
+		this.enderBetelTeleportDamageAmount = atLeast(this.enderBetelTeleportDamageAmount, 0.0D);
 		this.farmerTradeRawBetelBuyCount = clamp(this.farmerTradeRawBetelBuyCount, 1, 64);
 		this.farmerTradeRawBetelSellCount = clamp(this.farmerTradeRawBetelSellCount, 1, 64);
 		this.farmerTradeLeafBuyCount = clamp(this.farmerTradeLeafBuyCount, 1, 64);
@@ -206,6 +230,16 @@ public final class BetelNutConfig {
 			this.allowMilkInStage2 = true;
 			this.showEatingRestrictionMessage = true;
 			this.eatingRestrictionMessageCooldownTicks = 60;
+		}
+		if (this.configVersion < 6) {
+			this.enableEnderBetelTeleport = true;
+			this.enderBetelTeleportRadiusMin = 8;
+			this.enderBetelTeleportRadiusMax = 32;
+			this.enderBetelTeleportMaxAttempts = 32;
+			this.enderBetelTeleportPlaySound = true;
+			this.enderBetelTeleportParticles = true;
+			this.enderBetelTeleportDamage = false;
+			this.enderBetelTeleportDamageAmount = 2.0D;
 		}
 	}
 

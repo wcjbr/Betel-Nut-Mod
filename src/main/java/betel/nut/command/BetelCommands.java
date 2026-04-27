@@ -9,6 +9,7 @@ import betel.nut.component.BetelNutAddictionComponent;
 import betel.nut.component.BetelNutEntityComponents;
 import betel.nut.event.WithdrawalEatingRestrictions;
 import betel.nut.event.WithdrawalEatingRestrictions.RestrictionLevel;
+import betel.nut.item.EnderBetelTeleportHandler;
 import betel.nut.worldgen.BetelPalmTreeGenerator;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
@@ -44,6 +45,8 @@ public final class BetelCommands {
 										.then(argument("value", IntegerArgumentType.integer(0))
 												.executes(BetelCommands::setWithdrawal)))
 								.then(literal("trigger").executes(BetelCommands::triggerWithdrawal)))
+						.then(literal("ender")
+								.then(literal("teleport").executes(BetelCommands::teleportEnderBetel)))
 						.then(literal("tree")
 								.then(literal("generate").executes(BetelCommands::generateTree)))
 						.then(literal("trades")
@@ -167,6 +170,21 @@ public final class BetelCommands {
 						+ ", withdrawal=" + addiction.getWithdrawalValue() + "."),
 				true);
 		return Command.SINGLE_SUCCESS;
+	}
+
+	private static int teleportEnderBetel(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		ServerPlayer player = context.getSource().getPlayerOrException();
+		boolean teleported = EnderBetelTeleportHandler.tryTeleport(player, true);
+
+		if (teleported) {
+			context.getSource().sendSuccess(() -> Component.literal(
+					"\u5df2\u6d4b\u8bd5\u672b\u5f71\u69df\u6994\u968f\u673a\u77ac\u79fb\u3002"), true);
+			return Command.SINGLE_SUCCESS;
+		}
+
+		context.getSource().sendFailure(Component.literal(
+				"\u672b\u5f71\u69df\u6994\u77ac\u79fb\u6d4b\u8bd5\u5931\u8d25\uff1a\u6ca1\u6709\u627e\u5230\u5b89\u5168\u843d\u70b9\u3002"));
+		return 0;
 	}
 
 	private static String withdrawalStartRemainingText(BetelNutAddictionComponent addiction, BetelNutConfig config,

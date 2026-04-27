@@ -7,7 +7,17 @@
   "item.betel-nut-mod.refreshing_betel_nut": "Refreshing Betel Nut",
   "item.betel-nut-mod.night_betel_nut": "Night Betel Nut",
   "item.betel-nut-mod.energizing_betel_nut": "Energizing Betel Nut",
+  "item.betel-nut-mod.honey_betel_nut": "Honey Betel Nut",
+  "item.betel-nut-mod.glow_betel_nut": "Glow Betel Nut",
+  "item.betel-nut-mod.phantom_betel_nut": "Phantom Betel Nut",
+  "item.betel-nut-mod.ender_betel_nut": "Ender Betel Nut",
+  "item.betel-nut-mod.lapis_betel_nut": "Lapis Betel Nut",
+  "item.betel-nut-mod.quartz_betel_nut": "Quartz Betel Nut",
+  "item.betel-nut-mod.magma_betel_nut": "Magma Betel Nut",
+  "item.betel-nut-mod.amethyst_betel_nut": "Amethyst Betel Nut",
   "item.betel-nut-mod.synthetic_world_betel": "Craft the World Betel Nut",
+  "item.betel-nut-mod.rich_world_betel": "Dazzling World Betel Nut",
+  "item.betel-nut-mod.underground_betel": "Betel Underground",
   "block.betel-nut-mod.betel_palm_log": "Betel Palm Log",
   "block.betel-nut-mod.betel_palm_planks": "Betel Palm Planks",
   "block.betel-nut-mod.betel_palm_stairs": "Betel Palm Stairs",
@@ -22,5 +32,9 @@
   "advancement.betel-nut-mod.root.title": "Betel Nut Craft",
   "advancement.betel-nut-mod.root.description": "Obtain your first raw betel nut.",
   "advancement.betel-nut-mod.synthetic_world.title": "Craft the World",
-  "advancement.betel-nut-mod.synthetic_world.description": "Everything under heaven can be crafted."
+  "advancement.betel-nut-mod.synthetic_world.description": "Everything under heaven can be crafted.",
+  "advancement.betel-nut-mod.rich_world_betel.title": "Dazzling World",
+  "advancement.betel-nut-mod.rich_world_betel.description": "The more flavors, the deeper the dependence.",
+  "advancement.betel-nut-mod.underground_betel.title": "Betel Underground",
+  "advancement.betel-nut-mod.underground_betel.description": "You brought this flavor into deeper places."
 }

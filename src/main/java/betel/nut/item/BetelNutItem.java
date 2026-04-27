@@ -25,6 +25,7 @@ public class BetelNutItem extends Item {
 
 	@Override
 	public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+		boolean isEnderBetelNut = stack.is(ModItems.ENDER_BETEL_NUT);
 		ItemStack result = super.finishUsingItem(stack, level, entity);
 
 		if (!level.isClientSide() && entity instanceof ServerPlayer player) {
@@ -35,6 +36,10 @@ public class BetelNutItem extends Item {
 			if (BetelNutConfig.get().enableAddictionSystem) {
 				BetelNutEntityComponents.ADDICTION.get(player).eatBetelNut(player, this.addictionIncrease,
 						level.getGameTime());
+			}
+
+			if (isEnderBetelNut) {
+				EnderBetelTeleportHandler.tryTeleport(player);
 			}
 		}
 

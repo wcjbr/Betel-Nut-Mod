@@ -31,7 +31,17 @@ public final class ModItemGroups {
 						output.accept(ModItems.REFRESHING_BETEL_NUT);
 						output.accept(ModItems.NIGHT_BETEL_NUT);
 						output.accept(ModItems.ENERGIZING_BETEL_NUT);
+						output.accept(ModItems.HONEY_BETEL_NUT);
+						output.accept(ModItems.GLOW_BETEL_NUT);
+						output.accept(ModItems.PHANTOM_BETEL_NUT);
+						output.accept(ModItems.ENDER_BETEL_NUT);
+						output.accept(ModItems.LAPIS_BETEL_NUT);
+						output.accept(ModItems.QUARTZ_BETEL_NUT);
+						output.accept(ModItems.MAGMA_BETEL_NUT);
+						output.accept(ModItems.AMETHYST_BETEL_NUT);
 						output.accept(ModItems.SYNTHETIC_WORLD_BETEL);
+						output.accept(ModItems.RICH_WORLD_BETEL);
+						output.accept(ModItems.UNDERGROUND_BETEL);
 						output.accept(ModBlocks.BETEL_PALM_LOG_ITEM);
 						output.accept(ModBlocks.BETEL_PALM_PLANKS_ITEM);
 						output.accept(ModBlocks.BETEL_PALM_STAIRS_ITEM);
