@@ -12,6 +12,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -62,6 +64,7 @@ public final class EnderBetelTeleportHandler {
 		}
 
 		player.resetFallDistance();
+		player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 160, 0));
 		if (config.enderBetelTeleportParticles) {
 			spawnTeleportParticles(level, targetX, targetY, targetZ);
 		}

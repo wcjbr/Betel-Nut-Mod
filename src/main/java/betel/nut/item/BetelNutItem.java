@@ -1,6 +1,7 @@
 package betel.nut.item;
 
 import java.util.List;
+import java.util.function.IntSupplier;
 
 import betel.nut.BetelNutConfig;
 import betel.nut.component.BetelNutEntityComponents;
@@ -14,12 +15,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class BetelNutItem extends Item {
-	private final int addictionIncrease;
+	private final IntSupplier addictionIncreaseSupplier;
 	private final List<EffectSpec> effects;
 
 	public BetelNutItem(Properties properties, int addictionIncrease, List<EffectSpec> effects) {
 		super(properties);
-		this.addictionIncrease = addictionIncrease;
+		this.addictionIncreaseSupplier = () -> addictionIncrease;
+		this.effects = effects;
+	}
+
+	public BetelNutItem(Properties properties, IntSupplier addictionIncreaseSupplier, List<EffectSpec> effects) {
+		super(properties);
+		this.addictionIncreaseSupplier = addictionIncreaseSupplier;
 		this.effects = effects;
 	}
 
@@ -34,7 +41,8 @@ public class BetelNutItem extends Item {
 			}
 
 			if (BetelNutConfig.get().enableAddictionSystem) {
-				BetelNutEntityComponents.ADDICTION.get(player).eatBetelNut(player, this.addictionIncrease,
+				BetelNutEntityComponents.ADDICTION.get(player).eatBetelNut(player,
+						Math.max(0, this.addictionIncreaseSupplier.getAsInt()),
 						level.getGameTime());
 			}
 

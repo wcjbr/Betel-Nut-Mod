@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class BetelNutConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final String CONFIG_FILE_NAME = "betel_nut.json";
-	private static final int CONFIG_VERSION = 6;
+	private static final int CONFIG_VERSION = 7;
 	private static BetelNutConfig INSTANCE = new BetelNutConfig();
 
 	public static final int ROASTED_ADDICTION = 5;
@@ -26,13 +26,13 @@ public final class BetelNutConfig {
 	public static final int NIGHT_ADDICTION = 10;
 	public static final int ENERGIZING_ADDICTION = 20;
 	public static final int HONEY_ADDICTION = 10;
-	public static final int GLOW_ADDICTION = 10;
+	public static final int GLOW_ADDICTION = 12;
 	public static final int PHANTOM_ADDICTION = 14;
-	public static final int ENDER_ADDICTION = 25;
+	public static final int ENDER_ADDICTION = 18;
 	public static final int LAPIS_ADDICTION = 8;
-	public static final int QUARTZ_ADDICTION = 12;
+	public static final int QUARTZ_ADDICTION = 10;
 	public static final int MAGMA_ADDICTION = 18;
-	public static final int AMETHYST_ADDICTION = 9;
+	public static final int AMETHYST_ADDICTION = 10;
 	public static final int SYNTHETIC_WORLD_ADDICTION = 45;
 	public static final int RICH_WORLD_ADDICTION = 35;
 	public static final int UNDERGROUND_ADDICTION = 30;
@@ -50,6 +50,14 @@ public final class BetelNutConfig {
 	public int enchantedGoldenAppleCleanTimeTicks = 6000;
 	public boolean showActionbarMessages = true;
 	public boolean showChatMessages = false;
+	public int honeyBetelAddictionIncrease = HONEY_ADDICTION;
+	public int glowingBetelAddictionIncrease = GLOW_ADDICTION;
+	public int phantomBetelAddictionIncrease = PHANTOM_ADDICTION;
+	public int enderBetelAddictionIncrease = ENDER_ADDICTION;
+	public int lapisBetelAddictionIncrease = LAPIS_ADDICTION;
+	public int quartzBetelAddictionIncrease = QUARTZ_ADDICTION;
+	public int magmaBetelAddictionIncrease = MAGMA_ADDICTION;
+	public int amethystBetelAddictionIncrease = AMETHYST_ADDICTION;
 
 	public int minimumAddictionForWithdrawal = 1;
 	public int goldenAppleWithdrawalReduction = 30;
@@ -86,7 +94,7 @@ public final class BetelNutConfig {
 
 	public boolean enableEnderBetelTeleport = true;
 	public int enderBetelTeleportRadiusMin = 8;
-	public int enderBetelTeleportRadiusMax = 32;
+	public int enderBetelTeleportRadiusMax = 24;
 	public int enderBetelTeleportMaxAttempts = 32;
 	public boolean enderBetelTeleportPlaySound = true;
 	public boolean enderBetelTeleportParticles = true;
@@ -167,6 +175,14 @@ public final class BetelNutConfig {
 		this.goldenAppleAddictionReduction = atLeast(this.goldenAppleAddictionReduction, 0);
 		this.enchantedGoldenAppleAddictionReduction = atLeast(this.enchantedGoldenAppleAddictionReduction, 0);
 		this.enchantedGoldenAppleCleanTimeTicks = atLeast(this.enchantedGoldenAppleCleanTimeTicks, 0);
+		this.honeyBetelAddictionIncrease = atLeast(this.honeyBetelAddictionIncrease, 0);
+		this.glowingBetelAddictionIncrease = atLeast(this.glowingBetelAddictionIncrease, 0);
+		this.phantomBetelAddictionIncrease = atLeast(this.phantomBetelAddictionIncrease, 0);
+		this.enderBetelAddictionIncrease = atLeast(this.enderBetelAddictionIncrease, 0);
+		this.lapisBetelAddictionIncrease = atLeast(this.lapisBetelAddictionIncrease, 0);
+		this.quartzBetelAddictionIncrease = atLeast(this.quartzBetelAddictionIncrease, 0);
+		this.magmaBetelAddictionIncrease = atLeast(this.magmaBetelAddictionIncrease, 0);
+		this.amethystBetelAddictionIncrease = atLeast(this.amethystBetelAddictionIncrease, 0);
 		this.minimumAddictionForWithdrawal = clamp(this.minimumAddictionForWithdrawal, 0, this.maxAddictionValue);
 		this.goldenAppleWithdrawalReduction = atLeast(this.goldenAppleWithdrawalReduction, 0);
 		this.withdrawalEffectDurationTicks = atLeast(this.withdrawalEffectDurationTicks, 1);
@@ -240,6 +256,19 @@ public final class BetelNutConfig {
 			this.enderBetelTeleportParticles = true;
 			this.enderBetelTeleportDamage = false;
 			this.enderBetelTeleportDamageAmount = 2.0D;
+		}
+		if (this.configVersion < 7) {
+			this.honeyBetelAddictionIncrease = HONEY_ADDICTION;
+			this.glowingBetelAddictionIncrease = GLOW_ADDICTION;
+			this.phantomBetelAddictionIncrease = PHANTOM_ADDICTION;
+			this.enderBetelAddictionIncrease = ENDER_ADDICTION;
+			this.lapisBetelAddictionIncrease = LAPIS_ADDICTION;
+			this.quartzBetelAddictionIncrease = QUARTZ_ADDICTION;
+			this.magmaBetelAddictionIncrease = MAGMA_ADDICTION;
+			this.amethystBetelAddictionIncrease = AMETHYST_ADDICTION;
+			if (this.enderBetelTeleportRadiusMax == 32) {
+				this.enderBetelTeleportRadiusMax = 24;
+			}
 		}
 	}
 
