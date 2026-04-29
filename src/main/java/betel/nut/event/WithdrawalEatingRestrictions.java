@@ -79,14 +79,14 @@ public final class WithdrawalEatingRestrictions {
 			return RestrictionLevel.NONE;
 		}
 
-		int withdrawalValue = addiction.getWithdrawalValue();
-		if (withdrawalValue >= 100) {
+		int severity = addiction.getWithdrawalSeverity();
+		if (severity >= 4) {
 			return RestrictionLevel.BODY_REJECTS_FOOD;
 		}
-		if (withdrawalValue >= config.stage3EatingRestrictionWithdrawalValue) {
+		if (severity >= 3) {
 			return RestrictionLevel.ENCHANTED_GOLDEN_APPLE_ONLY;
 		}
-		if (withdrawalValue >= config.stage2EatingRestrictionWithdrawalValue) {
+		if (severity >= 2) {
 			return RestrictionLevel.SOFT_FOODS;
 		}
 		return RestrictionLevel.NONE;
@@ -136,9 +136,10 @@ public final class WithdrawalEatingRestrictions {
 		}
 
 		BetelNutMod.LOGGER.debug(
-				"Blocked withdrawal eating for {}: item={}, withdrawal={}, restrictionLevel={}, matchedTags={}, reason={}",
+				"Blocked withdrawal eating for {}: item={}, addiction={}, stage={}, withdrawal={}, severity={}, restrictionLevel={}, matchedTags={}, reason={}",
 				player.getScoreboardName(), BuiltInRegistries.ITEM.getKey(stack.getItem()),
-				addiction.getWithdrawalValue(), check.restrictionLevel().label(),
+				addiction.getAddictionValue(), addiction.getAddictionStage(), addiction.getWithdrawalValue(),
+				addiction.getWithdrawalSeverity(), check.restrictionLevel().label(),
 				check.matchedAllowedTags(), check.reason());
 		return true;
 	}

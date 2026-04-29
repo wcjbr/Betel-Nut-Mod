@@ -4,8 +4,11 @@ import betel.nut.BetelNutConfig;
 import betel.nut.BetelNutMod;
 import betel.nut.component.BetelNutAddictionComponent;
 import betel.nut.component.BetelNutEntityComponents;
+import betel.nut.network.AddictionSyncPayload;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -18,6 +21,9 @@ public final class BetelNutEvents {
 				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 					if (player.isAlive()) {
 						BetelNutEntityComponents.ADDICTION.get(player).clearActiveWithdrawalPenalties(player);
+						if (server.getTickCount() % 20 == 0) {
+							AddictionSyncPayload.send(player);
+						}
 					}
 				}
 				return;
@@ -30,21 +36,28 @@ public final class BetelNutEvents {
 						addiction.clearWithdrawalMaxHealthPenalty(player);
 					}
 					addiction.handleRespawnWithdrawalCheck(player);
+					addiction.serverTick(player);
 				}
 			}
 
-			if (server.getTickCount() % config.withdrawalCheckIntervalTicks != 0) {
-				return;
+			if (server.getTickCount() % config.withdrawalCheckIntervalTicks == 0) {
+				BetelNutMod.LOGGER.debug("AddictionTickHandler tick: serverTick={}, interval={}, players={}",
+						server.getTickCount(), config.withdrawalCheckIntervalTicks,
+						server.getPlayerList().getPlayerCount());
 			}
-
-			BetelNutMod.LOGGER.debug("AddictionTickHandler tick: serverTick={}, interval={}, players={}",
-					server.getTickCount(), config.withdrawalCheckIntervalTicks,
-					server.getPlayerList().getPlayerCount());
 
 			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-				if (player.isAlive()) {
-					BetelNutEntityComponents.ADDICTION.get(player).serverTick(player);
+				if (player.isAlive() && server.getTickCount() % 20 == 0) {
+					AddictionSyncPayload.send(player);
 				}
+			}
+		});
+
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> AddictionSyncPayload.send(handler.player));
+
+		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+			if (entity instanceof ServerPlayer player) {
+				AddictionSyncPayload.send(player);
 			}
 		});
 
@@ -52,6 +65,7 @@ public final class BetelNutEvents {
 			if (!alive) {
 				BetelNutEntityComponents.ADDICTION.get(newPlayer).scheduleRespawnWithdrawalCheck(newPlayer);
 			}
+			AddictionSyncPayload.send(newPlayer);
 		});
 
 		BetelNutMod.LOGGER.info("Betel nut addiction system initialized successfully");

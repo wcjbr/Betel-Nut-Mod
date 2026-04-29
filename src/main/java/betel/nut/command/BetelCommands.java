@@ -68,8 +68,7 @@ public final class BetelCommands {
 				? "\u65e0"
 				: lastEatTime + "\uff08\u8ddd\u4eca " + timeSinceLastEat + " tick\uff09";
 		long cleanRemainingTicks = Math.max(0, addiction.getCleanTime() - gameTime);
-		String withdrawalStartRemaining = withdrawalStartRemainingText(addiction, config, timeSinceLastEat,
-				cleanRemainingTicks);
+		String withdrawalStartRemaining = withdrawalStartRemainingText(player, addiction, config);
 		double maxHealthPenalty = addiction.getCurrentMaxHealthPenalty(player);
 		boolean hasMaxHealthPenalty = addiction.hasWithdrawalMaxHealthPenalty(player);
 		ItemStack mainHandStack = player.getMainHandItem();
@@ -79,8 +78,9 @@ public final class BetelCommands {
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"\u69df\u6994\u6210\u763e\u72b6\u6001\uff1a\u6210\u763e\u503c " + addiction.getAddictionValue()
+						+ "\uff0c\u6210\u763e\u9636\u6bb5 " + addiction.getAddictionStage()
 						+ "\uff0c\u6212\u65ad\u503c " + addiction.getWithdrawalValue()
-						+ "\uff0c\u5f53\u524d\u6212\u65ad\u9636\u6bb5 " + addiction.getWithdrawalStage()
+						+ "\uff0c\u5f53\u524d\u6212\u65ad\u60e9\u7f5a\u5f3a\u5ea6 " + addiction.getWithdrawalSeverity()
 						+ "\uff0c\u5df2\u63d0\u793a\u6212\u65ad\u9636\u6bb5 " + addiction.getNotifiedWithdrawalStage()
 						+ "\uff0c\u751f\u547d\u4e0a\u9650\u60e9\u7f5a " + maxHealthPenalty
 						+ "\uff0c\u6b63\u5728\u53d7\u751f\u547d\u4e0a\u9650\u60e9\u7f5a " + hasMaxHealthPenalty
@@ -105,13 +105,12 @@ public final class BetelCommands {
 		int value = IntegerArgumentType.getInteger(context, "value");
 		BetelNutAddictionComponent addiction = BetelNutEntityComponents.ADDICTION.get(player);
 		addiction.setAddictionValue(value);
-		if (addiction.getAddictionValue() <= 0) {
-			addiction.clearActiveWithdrawalPenalties(player);
-		}
+		addiction.refreshWithdrawalEffects(player);
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"\u5df2\u5c06\u4f60\u7684\u69df\u6994\u6210\u763e\u503c\u8bbe\u7f6e\u4e3a "
-						+ addiction.getAddictionValue() + "\u3002"),
+						+ addiction.getAddictionValue() + "\uff0c\u6210\u763e\u9636\u6bb5 "
+						+ addiction.getAddictionStage() + "\u3002"),
 				true);
 		return Command.SINGLE_SUCCESS;
 	}
@@ -125,6 +124,7 @@ public final class BetelCommands {
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"Set betel addiction to " + addiction.getAddictionValue()
+						+ " (stage " + addiction.getAddictionStage() + ")"
 						+ " and reset lastEatTime to the current game time."),
 				true);
 		return Command.SINGLE_SUCCESS;
@@ -135,11 +135,12 @@ public final class BetelCommands {
 		int value = IntegerArgumentType.getInteger(context, "value");
 		BetelNutAddictionComponent addiction = BetelNutEntityComponents.ADDICTION.get(player);
 		addiction.addAddictionValue(value);
+		addiction.refreshWithdrawalEffects(player);
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"\u5df2\u589e\u52a0\u69df\u6994\u6210\u763e\u503c " + value
 						+ "\uff0c\u5f53\u524d\u6210\u763e\u503c\u4e3a " + addiction.getAddictionValue()
-						+ "\u3002"),
+						+ "\uff0c\u6210\u763e\u9636\u6bb5 " + addiction.getAddictionStage() + "\u3002"),
 				true);
 		return Command.SINGLE_SUCCESS;
 	}
@@ -162,7 +163,8 @@ public final class BetelCommands {
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"\u5df2\u5c06\u4f60\u7684\u69df\u6994\u6212\u65ad\u503c\u8bbe\u7f6e\u4e3a "
-						+ addiction.getWithdrawalValue() + "\u3002"),
+						+ addiction.getWithdrawalValue() + "\uff0c\u60e9\u7f5a\u5f3a\u5ea6 "
+						+ addiction.getWithdrawalSeverity() + "\u3002"),
 				true);
 		return Command.SINGLE_SUCCESS;
 	}
@@ -174,7 +176,9 @@ public final class BetelCommands {
 
 		context.getSource().sendSuccess(() -> Component.literal(
 				"Triggered betel withdrawal test. addiction=" + addiction.getAddictionValue()
-						+ ", withdrawal=" + addiction.getWithdrawalValue() + "."),
+						+ ", stage=" + addiction.getAddictionStage()
+						+ ", withdrawal=" + addiction.getWithdrawalValue()
+						+ ", severity=" + addiction.getWithdrawalSeverity() + "."),
 				true);
 		return Command.SINGLE_SUCCESS;
 	}
@@ -194,8 +198,8 @@ public final class BetelCommands {
 		return 0;
 	}
 
-	private static String withdrawalStartRemainingText(BetelNutAddictionComponent addiction, BetelNutConfig config,
-			long timeSinceLastEat, long cleanRemainingTicks) {
+	private static String withdrawalStartRemainingText(ServerPlayer player, BetelNutAddictionComponent addiction,
+			BetelNutConfig config) {
 		if (!config.enableAddictionSystem) {
 			return "disabled";
 		}
@@ -209,10 +213,9 @@ public final class BetelCommands {
 			return "timer not started";
 		}
 
-		long withdrawalDelayRemaining = Math.max(0, config.timeBeforeWithdrawalTicks - timeSinceLastEat);
-		long remaining = Math.max(withdrawalDelayRemaining, cleanRemainingTicks);
-		if (remaining <= 0) {
-			return "0 tick, detection active";
+		int remaining = addiction.getNextWithdrawalTicks(player);
+		if (remaining < 0) {
+			return "no scheduled withdrawal";
 		}
 		return remaining + " tick";
 	}
@@ -264,8 +267,9 @@ public final class BetelCommands {
 		context.getSource().sendSuccess(() -> Component.literal(
 				"\u8fdb\u98df\u6d4b\u8bd5\uff1a\u5f53\u524d\u624b\u6301\u7269\u54c1 " + itemName
 						+ "\uff0c\u6210\u763e\u503c " + addiction.getAddictionValue()
+						+ "\uff0c\u6210\u763e\u9636\u6bb5 " + addiction.getAddictionStage()
 						+ "\uff0c\u6212\u65ad\u503c " + addiction.getWithdrawalValue()
-						+ "\uff0c\u6212\u65ad\u9636\u6bb5 " + addiction.getWithdrawalStage()
+						+ "\uff0c\u6212\u65ad\u60e9\u7f5a\u5f3a\u5ea6 " + addiction.getWithdrawalSeverity()
 						+ "\uff0c\u8fdb\u98df\u9650\u5236\u542f\u7528 "
 						+ WithdrawalEatingRestrictions.isFeatureEnabled(BetelNutConfig.get())
 						+ "\uff0c\u8fdb\u98df\u9650\u5236\u7b49\u7ea7 "

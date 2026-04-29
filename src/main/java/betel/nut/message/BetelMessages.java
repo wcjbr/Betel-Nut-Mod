@@ -47,28 +47,9 @@ public final class BetelMessages {
 		return "\u8fd9\u79cd\u611f\u89c9\u4f3c\u4e4e\u6709\u70b9\u8ba9\u4eba\u7559\u604b\u3002";
 	}
 
-	public static int withdrawalStage(int withdrawalValue) {
-		if (withdrawalValue >= 100) {
-			return 4;
-		}
-
-		if (withdrawalValue >= 75) {
-			return 3;
-		}
-
-		if (withdrawalValue >= 50) {
-			return 2;
-		}
-
-		if (withdrawalValue >= 25) {
-			return 1;
-		}
-
-		return 0;
-	}
-
 	public static String withdrawalStageMessage(int stage) {
 		return switch (stage) {
+			case 5 -> "\u6781\u5ea6\u6212\u65ad\u8ba9\u4f60\u7684\u8eab\u4f53\u51e0\u4e4e\u65e0\u6cd5\u627f\u53d7\u3002";
 			case 4 -> "\u4e25\u91cd\u6212\u65ad\u8ba9\u4f60\u51e0\u4e4e\u65e0\u6cd5\u6b63\u5e38\u884c\u52a8\u3002";
 			case 3 -> "\u4f60\u7684\u8eab\u4f53\u72b6\u6001\u660e\u663e\u6076\u5316\uff0c\u6700\u5927\u751f\u547d\u503c\u4e0b\u964d\u4e86\u3002";
 			case 2 -> "\u6212\u65ad\u53cd\u5e94\u6b63\u5728\u4fb5\u8680\u4f60\u7684\u8eab\u4f53\u3002";

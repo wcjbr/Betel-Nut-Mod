@@ -54,6 +54,10 @@ public class BetelNutItem extends Item {
 		return result;
 	}
 
+	public int getAddictionIncrease() {
+		return Math.max(0, this.addictionIncreaseSupplier.getAsInt());
+	}
+
 	public record EffectSpec(Holder<MobEffect> effect, int durationTicks, int amplifier) {
 	}
 }

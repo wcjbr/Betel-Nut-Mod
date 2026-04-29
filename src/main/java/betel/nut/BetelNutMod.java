@@ -6,6 +6,7 @@ import betel.nut.block.ModBlocks;
 import betel.nut.command.BetelCommands;
 import betel.nut.item.ModItemGroups;
 import betel.nut.item.ModItems;
+import betel.nut.network.AddictionSyncPayload;
 import betel.nut.villager.ModVillagerTrades;
 import betel.nut.worldgen.ModWorldGeneration;
 import net.fabricmc.api.ModInitializer;
@@ -29,6 +30,7 @@ public class BetelNutMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		BetelNutConfig.load();
+		AddictionSyncPayload.register();
 		ModBlocks.register();
 		ModItems.register();
 		ModItemGroups.register();

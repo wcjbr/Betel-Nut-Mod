@@ -3,7 +3,7 @@
 	"id": "betel-nut-mod",
 	"version": "${version}",
 	"name": "Betel Nut Mod",
-	"description": "用⑩代码写起来的模组",
+	"description": "A Fabric survival expansion mod featuring betel nut trees, flavored betel nuts, villager trades, Farmer's Delight integration, and an addiction HUD with withdrawal tracking.",
 	"authors": [
 		"寿云"
 	],
